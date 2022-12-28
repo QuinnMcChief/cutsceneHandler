@@ -44,19 +44,30 @@ end)
     such as how long it takes the camera to tween between each angle's CFrame, and its general TweenInfo (again, study TweenService.)
     
     While this will be crucial for the structure of our cutscene, right now it's just a table. How do we utilize this table?
-    Well, since each angle in our cutscene executes sequentially, we can index through the table using an ipairs for loop.
+    First, we set the camera to "Scriptable", so we can even move it around in the first place like so:
 ]]
+
+	camera.CameraType = Enum.CameraType.Scriptable;
+
+   -->  Since each angle in our cutscene executes sequentially, we can index through the table using an ipairs for loop.
 
 	--> PLAY CAMERA CUTSCENES IN SUCCESSION
 	for i, cutsceneInfo in ipairs(cutsceneAngles) do
 		--[[ Put in here whatever actions you want to happen when the cutscene moves from angle-to-angle.]]
-		end;
 		local tween = ts:Create(camera, TweenInfo.new(cutsceneInfo.Seconds, cutsceneInfo.Style, Enum.EasingDirection.Out), {CFrame = cutsceneInfo.CFrame})
 		tween:Play();
 		tween.Completed:Wait();
 	end
   
-  --> Congratulations, you have run your cutscene! However, personally, I usually do stuff after the camera movements end, such as bring up a dialogue box. I do so below:
+  --[[ Congratulations, you have run your cutscene! But, we're not done yet.
+	It is absolutely PARAMOUNT that you reset the camera back to normal, because it does not do it for you.
+	Luckily, this can be done in a very easy way. See below:
+]]
+
+  workspace.CurrentCamera.CameraSubject = game.Players.LocalPlayer.Character.Humanoid;
+  workspace.CurrentCamera.CameraType = Enum.CameraType.Custom;
+
+	--> I like to do things after my cutscene before reverting the camera, though. This is an example of showing a dialogue box:
   local dialogueBox = Assets.GUIs.dialogueBox:Clone();
 	dialogueBox.Parent = player.PlayerGui;
 	local textLabel = dialogueBox.Frame.TextLabel;
